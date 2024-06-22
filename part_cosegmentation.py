@@ -1,4 +1,6 @@
 import argparse
+import os
+
 import torch
 from pathlib import Path
 
@@ -14,13 +16,41 @@ from typing import List, Tuple
 import pydensecrf.densecrf as dcrf
 from matplotlib.colors import ListedColormap
 
+def restart_from_checkpoint(ckp_path, **kwargs):
+    """
+    Re-start from checkpoint
+    """
+    if not os.path.isfile(ckp_path):
+        return
+    print("Found checkpoint at {}".format(ckp_path))
+
+    # open checkpoint file
+    checkpoint = torch.load(ckp_path, map_location="cpu")
+
+    # key is what to look for in the checkpoint file
+    # value is the object to load
+    # example: {'state_dict': model}
+    for key, value in kwargs.items():
+        if key in checkpoint and value is not None:
+            try:
+                msg = value.load_state_dict(checkpoint[key], strict=False)
+                print("=> loaded '{}' from checkpoint '{}' with msg {}".format(key, ckp_path, msg))
+            except TypeError:
+                try:
+                    msg = value.load_state_dict(checkpoint[key])
+                    print("=> loaded '{}' from checkpoint: '{}'".format(key, ckp_path))
+                except ValueError:
+                    print("=> failed to load '{}' from checkpoint: '{}'".format(key, ckp_path))
+        else:
+            print("=> key '{}' not found in checkpoint: '{}'".format(key, ckp_path))
+
 
 def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_size: int = 224, layer: int = 11,
                              facet: str = 'key', bin: bool = False, thresh: float = 0.065,
                              model_type: str = 'dino_vits8', stride: int = 4, votes_percentage: int = 75,
                              sample_interval: int = 100, low_res_saliency_maps: bool = True, num_parts: int = 4,
                              num_crop_augmentations: int = 0, three_stages: bool = False,
-                             elbow_second_stage: float = 0.94, save_dir: str = None) -> Tuple[List[Image.Image],
+                             elbow_second_stage: float = 0.94, save_dir: str = None, ckpt_path: str = None) -> Tuple[List[Image.Image],
                                                                                               List[Image.Image]]:
     """
     finding cosegmentation of a set of images.
@@ -48,6 +78,8 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
     """
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     extractor = ViTExtractor(model_type, stride, device=device)
+    if ckpt_path is not None:
+        restart_from_checkpoint(ckp_path=ckpt_path, extractor.model=teacher)
     descriptors_list = []
     saliency_maps_list = []
     image_pil_list = []
@@ -328,7 +360,6 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
 
     return part_segmentations, image_pil_list
 
-
 def draw_part_cosegmentation(num_parts: int, segmentation_parts: List[np.ndarray], pil_images: List[Image.Image]) -> List[plt.Figure]:
     """
     Visualizes part cosegmentation results on chessboard background.
@@ -391,6 +422,7 @@ if __name__ == "__main__":
                         help="""type of model to extract. 
                            Choose from [dino_vits8 | dino_vits16 | dino_vitb8 | dino_vitb16 | vit_small_patch8_224 | 
                            vit_small_patch16_224 | vit_base_patch8_224 | vit_base_patch16_224]""")
+    parser.add_argument('--from_ckpt', default=None, type=str, help="""Load model from checkpoint""")
     parser.add_argument('--facet', default='key', type=str, help="""facet to create descriptors from. 
                                                                     options: ['key' | 'query' | 'value' | 'token']""")
     parser.add_argument('--layer', default=11, type=int, help="layer to create descriptors from.")
@@ -436,7 +468,7 @@ if __name__ == "__main__":
                                                               args.stride, args.votes_percentage, args.sample_interval,
                                                               args.low_res_saliency_maps, args.num_parts,
                                                               args.num_crop_augmentations, args.three_stages,
-                                                              args.elbow_second_stage, curr_save_dir)
+                                                              args.elbow_second_stage, curr_save_dir, args.from_ckpt)
 
             # saving part cosegmentations
             part_figs = draw_part_cosegmentation(args.num_parts, parts_imgs, pil_images)
