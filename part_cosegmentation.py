@@ -81,6 +81,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     extractor = ViTExtractor(model_type, stride, device=device)
     if ckpt_path is not None:
+        print('Loading pre-trained checkpoit')
         restart_from_checkpoint(ckp_path=ckpt_path, teacher=extractor.model)
     descriptors_list = []
     saliency_maps_list = []
