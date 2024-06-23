@@ -241,6 +241,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         d_to_cent = d_to_cent - np.max(d_to_cent, axis=-1)[..., None]
         print('!!!!')
         print(d_to_cent.shape)
+        print(d_to_cent)
         upsample = torch.nn.Upsample(size=load_size)
         u = np.array(upsample(torch.from_numpy(d_to_cent).permute(2, 0, 1)[None, ...])[0].permute(1, 2, 0))
         d = dcrf.DenseCRF2D(u.shape[1], u.shape[0], u.shape[2])
