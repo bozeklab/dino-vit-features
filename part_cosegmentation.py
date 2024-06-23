@@ -35,6 +35,7 @@ def load_from_checkpoint(ckp_path, **kwargs):
             try:
                 print(checkpoint[key].keys())
                 state_dict = {k.replace("module.", ""): v for k, v in checkpoint[key].items()}
+                state_dict = {k.replace("backbone.", ""): v for k, v in checkpoint[key].items()}
                 msg = value.load_state_dict(state_dict, strict=False)
                 print("=> loaded '{}' from checkpoint '{}' with msg {}".format(key, ckp_path, msg))
             except TypeError:
