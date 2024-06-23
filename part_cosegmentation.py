@@ -33,7 +33,8 @@ def restart_from_checkpoint(ckp_path, **kwargs):
     for key, value in kwargs.items():
         if key in checkpoint and value is not None:
             try:
-                msg = value.load_state_dict(checkpoint[key], strict=False)
+                state_dict = {k.replace("backbone.", ""): v for k, v in checkpoint[key].items()}
+                msg = value.load_state_dict(state_dict, strict=False)
                 print(checkpoint[key].keys())
                 print("=> loaded '{}' from checkpoint '{}' with msg {}".format(key, ckp_path, msg))
             except TypeError:
