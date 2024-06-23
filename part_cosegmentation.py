@@ -124,7 +124,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         descs = extractor.extract_descriptors(image_batch.to(device), layer, facet, bin).cpu().numpy()
         curr_num_patches, curr_load_size = extractor.num_patches, extractor.load_size
         num_patches_list.append(curr_num_patches)
-        load_size_list.append(curr_load_size)
+        load_size_list.append(63)
         descriptors_list.append(descs)
         if low_res_saliency_maps:
             if load_size is not None:
