@@ -34,8 +34,8 @@ def restart_from_checkpoint(ckp_path, **kwargs):
         if key in checkpoint and value is not None:
             try:
                 state_dict = {k.replace("backbone.", ""): v for k, v in checkpoint[key].items()}
+                print(value)
                 msg = value.load_state_dict(state_dict, strict=False)
-                print(checkpoint[key].keys())
                 print("=> loaded '{}' from checkpoint '{}' with msg {}".format(key, ckp_path, msg))
             except TypeError:
                 try:
@@ -81,7 +81,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     extractor = ViTExtractor(model_type, stride, device=device)
     if ckpt_path is not None:
-        print('Loading pre-trained checkpoit')
+        print('Loading pre-trained checkpoint')
         restart_from_checkpoint(ckp_path=ckpt_path, teacher=extractor.model)
     descriptors_list = []
     saliency_maps_list = []
