@@ -90,8 +90,9 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
     else:
         saliency_extractor = extractor
     if ckpt_path is not None:
-        print('Loading pre-trained checkpoint')
+        print('Loading pre-trained checkpoint for extractor')
         restart_from_checkpoint(ckp_path=ckpt_path, teacher=extractor.model)
+        print('Loading pre-trained checkpoint for saliency maps')
         restart_from_checkpoint(ckp_path=ckpt_path, teacher=saliency_extractor.model)
     num_images = len(image_paths)
     if save_dir is not None:
