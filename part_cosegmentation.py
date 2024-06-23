@@ -124,7 +124,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         descs = extractor.extract_descriptors(image_batch.to(device), layer, facet, bin).cpu().numpy()
         curr_num_patches, curr_load_size = extractor.num_patches, extractor.load_size
         num_patches_list.append(curr_num_patches)
-        load_size_list.append(63)
+        load_size_list.append(curr_load_size)
         descriptors_list.append(descs)
         if low_res_saliency_maps:
             if load_size is not None:
@@ -239,11 +239,10 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         d_to_cent = np.concatenate((dist_to_parts, min_dist_to_bg), axis=1).reshape(num_patches[0], num_patches[1],
                                                                                     part_num_labels + 1)
         d_to_cent = d_to_cent - np.max(d_to_cent, axis=-1)[..., None]
-        print('!!!!')
-        print(d_to_cent.shape)
-        print(load_size)
         upsample = torch.nn.Upsample(size=load_size)
         u = np.array(upsample(torch.from_numpy(d_to_cent).permute(2, 0, 1)[None, ...])[0].permute(1, 2, 0))
+        print('!!!')
+        print(u.shape[1], u.shape[0], u.shape[2])
         d = dcrf.DenseCRF2D(u.shape[1], u.shape[0], u.shape[2])
         d.setUnaryEnergy(np.ascontiguousarray(u.reshape(-1, u.shape[-1]).T))
         compat = [50, 15]
