@@ -64,9 +64,8 @@ class ViTExtractor:
         """
         if 'dino' in model_type:
             model = torch.hub.load('facebookresearch/dino:main', model_type)
-            print('!!!')
         else:  # model from timm -- load weights from timm to dino model (enables working on arbitrary size images).
-            temp_model = timm.create_model(model_type, pretrained=False)
+            temp_model = timm.create_model(model_type, pretrained=True)
             model_type_dict = {
                 'vit_small_patch16_224': 'dino_vits16',
                 'vit_small_patch8_224': 'dino_vits8',

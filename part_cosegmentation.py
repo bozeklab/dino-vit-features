@@ -16,7 +16,7 @@ from typing import List, Tuple
 import pydensecrf.densecrf as dcrf
 from matplotlib.colors import ListedColormap
 
-def restart_from_checkpoint(ckp_path, **kwargs):
+def load_from_checkpoint(ckp_path, **kwargs):
     """
     Re-start from checkpoint
     """
@@ -34,7 +34,6 @@ def restart_from_checkpoint(ckp_path, **kwargs):
         if key in checkpoint and value is not None:
             try:
                 state_dict = {k.replace("backbone.", ""): v for k, v in checkpoint[key].items()}
-                print(value)
                 msg = value.load_state_dict(state_dict, strict=False)
                 print("=> loaded '{}' from checkpoint '{}' with msg {}".format(key, ckp_path, msg))
             except TypeError:
@@ -91,9 +90,9 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         saliency_extractor = extractor
     if ckpt_path is not None:
         print('Loading pre-trained checkpoint for extractor')
-        restart_from_checkpoint(ckp_path=ckpt_path, teacher=extractor.model)
+        load_from_checkpoint(ckp_path=ckpt_path, teacher=extractor.model)
         print('Loading pre-trained checkpoint for saliency maps')
-        restart_from_checkpoint(ckp_path=ckpt_path, teacher=saliency_extractor.model)
+        load_from_checkpoint(ckp_path=ckpt_path, teacher=saliency_extractor.model)
     num_images = len(image_paths)
     if save_dir is not None:
         save_dir = Path(save_dir)
