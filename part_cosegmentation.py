@@ -261,7 +261,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         Q = d.inference(10)
         final = np.argmax(Q, axis=0).reshape(load_size)
         parts_float = final.astype(np.float32)
-        parts_float[parts_float == part_num_labels] = np.nan
+        #parts_float[parts_float == part_num_labels] = np.nan
         part_segmentations.append(parts_float)
 
     if three_stages:  # if needed, apply third stage
