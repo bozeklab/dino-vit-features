@@ -226,6 +226,8 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
     # get smoothed parts using crf
     part_segmentations = []
     for img, img_path, num_patches, load_size, descs in zip(image_pil_list, image_paths, num_patches_list, load_size_list, descriptors_list):
+        print('!!!')
+        print(image_paths)
         bg_centroids = tuple(i for i in range(algorithm.centroids.shape[0]) if not i in salient_labels)
         curr_normalized_descs = descs[0, 0].astype(np.float32)
         faiss.normalize_L2(curr_normalized_descs)  # in-place operation
