@@ -242,9 +242,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
 
         if save_dir is not None:
             cmap = 'jet' if num_labels > 10 else 'tab10'
-            parts = torch.argmax(d_to_cent, dim=-1)
-            print('!!!')
-            print(num_patches)
+            parts = np.argmax(d_to_cent, dim=-1)
             #fig, ax = plt.subplots()
             #ax.axis('off')
             #ax.imshow(label_per_image.reshape(num_patches), vmin=0, vmax=num_labels - 1, cmap=cmap)
