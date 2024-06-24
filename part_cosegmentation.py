@@ -245,6 +245,8 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
             parts = np.argmax(d_to_cent, axis=-1)
             fig, ax = plt.subplots()
             ax.axis('off')
+            print('!!!')
+            print(num_patches)
             ax.imshow(label_per_image.reshape(num_patches), vmin=0, vmax=num_labels - 1, cmap=cmap)
             fig.savefig(save_dir / f'{Path(img_path).stem}_parts.png', bbox_inches='tight', pad_inches=0)
             plt.close(fig)
