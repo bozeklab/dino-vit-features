@@ -226,8 +226,6 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
     # get smoothed parts using crf
     part_segmentations = []
     for img, img_path, num_patches, load_size, descs in zip(image_pil_list, image_paths, num_patches_list, load_size_list, descriptors_list):
-        print('!!!')
-        print(image_paths)
         bg_centroids = tuple(i for i in range(algorithm.centroids.shape[0]) if not i in salient_labels)
         curr_normalized_descs = descs[0, 0].astype(np.float32)
         faiss.normalize_L2(curr_normalized_descs)  # in-place operation
@@ -242,15 +240,16 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
                                                                                     part_num_labels + 1)
         d_to_cent = d_to_cent - np.max(d_to_cent, axis=-1)[..., None]
 
-        # if save_dir is not None:
-        #     cmap = 'jet' if num_labels > 10 else 'tab10'
-        #     parts = torch.argmax(d_to_cent, dim=-1)
-        #     if not ('_aug_' in Path(image_path).stem):
-        #         fig, ax = plt.subplots()
-        #         ax.axis('off')
-        #         ax.imshow(label_per_image.reshape(num_patches), vmin=0, vmax=num_labels - 1, cmap=cmap)
-        #         fig.savefig(save_dir / f'{Path(image_path).stem}_parts.png', bbox_inches='tight', pad_inches=0)
-        #         plt.close(fig)
+        if save_dir is not None:
+            cmap = 'jet' if num_labels > 10 else 'tab10'
+            parts = torch.argmax(d_to_cent, dim=-1)
+            print('!!!')
+            print(num_patches)
+            #fig, ax = plt.subplots()
+            #ax.axis('off')
+            #ax.imshow(label_per_image.reshape(num_patches), vmin=0, vmax=num_labels - 1, cmap=cmap)
+            #fig.savefig(save_dir / f'{Path(img_path).stem}_parts.png', bbox_inches='tight', pad_inches=0)
+            #plt.close(fig)
 
         upsample = torch.nn.Upsample(size=load_size)
         u = np.array(upsample(torch.from_numpy(d_to_cent).permute(2, 0, 1)[None, ...])[0].permute(1, 2, 0))
