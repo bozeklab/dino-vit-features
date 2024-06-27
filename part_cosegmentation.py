@@ -261,6 +261,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         Q = d.inference(10)
         final = np.argmax(Q, axis=0).reshape(load_size)
         parts_float = final.astype(np.float32)
+        np.save(save_dir / f'{Path(img_path).stem}_parts.npy', parts_float)
         parts_float[parts_float == part_num_labels] = np.nan
         part_segmentations.append(parts_float)
 
@@ -357,7 +358,6 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
             Q = d.inference(10)
             final = np.argmax(Q, axis=0).reshape(load_size)
             common_parts_float = final.astype(np.float32)
-            np.save(save_dir / f'{Path(img_path).stem}_parts.npy', common_parts_float)
             common_parts_float[common_parts_float == num_parts] = np.nan
             common_part_segmentations.append(common_parts_float)
 
