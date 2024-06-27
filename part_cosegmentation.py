@@ -396,9 +396,9 @@ def draw_part_cosegmentation(num_parts: int, segmentation_parts: List[np.ndarray
         # create chessboard bg
         checkerboard_bg = np.zeros(masked_image.shape[:2])
         checkerboard_edge = 10
-        #checkerboard_bg[[x // checkerboard_edge % 2 == 0 for x in range(checkerboard_bg.shape[0])], :] = 1
-        #checkerboard_bg[:, [x // checkerboard_edge % 2 == 1 for x in range(checkerboard_bg.shape[1])]] = \
-        #    1 - checkerboard_bg[:, [x // checkerboard_edge % 2 == 1 for x in range(checkerboard_bg.shape[1])]]
+        checkerboard_bg[[x // checkerboard_edge % 2 == 0 for x in range(checkerboard_bg.shape[0])], :] = 1
+        checkerboard_bg[:, [x // checkerboard_edge % 2 == 1 for x in range(checkerboard_bg.shape[1])]] = \
+            1 - checkerboard_bg[:, [x // checkerboard_edge % 2 == 1 for x in range(checkerboard_bg.shape[1])]]
         checkerboard_bg = 0.75
         checkerboard_bg = 255. * checkerboard_bg
 
@@ -406,7 +406,7 @@ def draw_part_cosegmentation(num_parts: int, segmentation_parts: List[np.ndarray
         fig, ax = plt.subplots()
         ax.axis('off')
         color_list = ["red", "yellow", "blue", "lime", "darkviolet", "magenta", "cyan", "brown", "yellow"]
-        cmap = 'jet' if num_parts > 10 else ListedColormap(color_list[:num_parts])
+        cmap = 'jet' if num_parts > 10 else ListedColormap(color_list[:(num_parts + 1)])
         ax.imshow(checkerboard_bg, cmap='gray', vmin=0, vmax=255)
         #ax.imshow(masked_image_transparent.astype(np.int32), vmin=0, vmax=255)
         ax.imshow(parts_seg, cmap=cmap, vmin=0, vmax=num_parts, alpha=0.5, interpolation='nearest')
