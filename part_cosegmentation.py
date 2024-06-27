@@ -261,7 +261,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         Q = d.inference(10)
         final = np.argmax(Q, axis=0).reshape(load_size)
         parts_float = final.astype(np.float32)
-        #parts_float[parts_float == part_num_labels] = np.nan
+        parts_float[parts_float == part_num_labels] = np.nan
         part_segmentations.append(parts_float)
 
     if three_stages:  # if needed, apply third stage
@@ -325,7 +325,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
 
         # get smoothed parts using crf
         common_part_segmentations = []
-        for img, num_patches, load_size, descs in zip(image_pil_list, num_patches_list, load_size_list, descriptors_list):
+        for img_path, img, num_patches, load_size, descs in zip(image_paths, image_pil_list, num_patches_list, load_size_list, descriptors_list):
             bg_centroids_1 = tuple(i for i in range(algorithm.centroids.shape[0]) if not i in salient_labels)
             bg_centroids_2 = tuple(i for i in range(part_algorithm.centroids.shape[0]) if not i in common_labels)
             curr_normalized_descs = descs[0, 0].astype(np.float32)
@@ -357,6 +357,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
             Q = d.inference(10)
             final = np.argmax(Q, axis=0).reshape(load_size)
             common_parts_float = final.astype(np.float32)
+            np.save(save_dir / f'{Path(img_path).stem}_parts.npy', common_parts_float)
             common_parts_float[common_parts_float == num_parts] = np.nan
             common_part_segmentations.append(common_parts_float)
 
@@ -374,6 +375,7 @@ def find_part_cosegmentation(image_paths: List[str], elbow: float = 0.975, load_
         image_pil_list = no_aug_image_pil_list
 
     return part_segmentations, image_pil_list
+
 
 def draw_part_cosegmentation(num_parts: int, segmentation_parts: List[np.ndarray], pil_images: List[Image.Image]) -> List[plt.Figure]:
     """
