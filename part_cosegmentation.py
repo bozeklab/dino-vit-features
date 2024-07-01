@@ -466,7 +466,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    def divide_list(lst, chunk_size=10000):
+    def divide_list(lst, chunk_size=3000):
         # Using list comprehension to divide the list into chunks of size chunk_size
         return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
 
@@ -486,8 +486,6 @@ if __name__ == "__main__":
             curr_save_dir.mkdir(parents=True, exist_ok=True)
 
             divided_curr_images = divide_list(curr_images)
-            print('!!!')
-            print(len(divided_curr_images[0]), len(divided_curr_images[2]), len(divided_curr_images[-1]))
             for i, chunk in enumerate(divided_curr_images):
                 print(f"working on chunk {i}")
                 # computing part cosegmentation
