@@ -466,7 +466,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    def divide_list(lst, chunk_size=20000):
+    def divide_list(lst, chunk_size=10000):
         # Using list comprehension to divide the list into chunks of size chunk_size
         return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
 
