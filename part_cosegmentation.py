@@ -476,6 +476,7 @@ if __name__ == "__main__":
         for set_dir in tqdm(sets_dir):
             print(f"working on {set_dir}")
             curr_images = [x for x in set_dir.iterdir() if x.suffix.lower() in ['.jpg', '.png', '.jpeg']]
+            print(f"numer of files {len(curr_images)}")
             curr_save_dir = save_dir / set_dir.name
             curr_save_dir.mkdir(parents=True, exist_ok=True)
 
