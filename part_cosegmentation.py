@@ -487,7 +487,7 @@ if __name__ == "__main__":
 
             divided_curr_images = divide_list(curr_images)
             for i, chunk in enumerate(divided_curr_images):
-
+                print(f"working on chunk {i}")
                 # computing part cosegmentation
                 parts_imgs, pil_images = find_part_cosegmentation(chunk, args.elbow, args.load_size, args.layer,
                                                                   args.facet, args.bin, args.thresh, args.model_type,
