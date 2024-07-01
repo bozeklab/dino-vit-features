@@ -486,6 +486,8 @@ if __name__ == "__main__":
             curr_save_dir.mkdir(parents=True, exist_ok=True)
 
             divided_curr_images = divide_list(curr_images)
+            print('!!!')
+            print(len(divided_curr_images[0]), len(divided_curr_images[2]), len(divided_curr_images[-1]))
             for i, chunk in enumerate(divided_curr_images):
                 print(f"working on chunk {i}")
                 # computing part cosegmentation
