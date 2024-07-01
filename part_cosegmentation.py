@@ -465,6 +465,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+
+    def divide_list(lst, chunk_size=20000):
+        # Using list comprehension to divide the list into chunks of size chunk_size
+        return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
+
     with torch.no_grad():
 
         # prepare directories
@@ -480,17 +485,20 @@ if __name__ == "__main__":
             curr_save_dir = save_dir / set_dir.name
             curr_save_dir.mkdir(parents=True, exist_ok=True)
 
-            # computing part cosegmentation
-            parts_imgs, pil_images = find_part_cosegmentation(curr_images, args.elbow, args.load_size, args.layer,
-                                                              args.facet, args.bin, args.thresh, args.model_type,
-                                                              args.stride, args.votes_percentage, args.sample_interval,
-                                                              args.low_res_saliency_maps, args.num_parts,
-                                                              args.num_crop_augmentations, args.three_stages,
-                                                              args.elbow_second_stage, curr_save_dir, args.from_ckpt)
+            divided_curr_images = divide_list(curr_images)
+            for i, chunk in enumerate(divided_curr_images):
 
-            # saving part cosegmentations
-            part_figs = draw_part_cosegmentation(args.num_parts, parts_imgs, pil_images)
+                # computing part cosegmentation
+                parts_imgs, pil_images = find_part_cosegmentation(chunk, args.elbow, args.load_size, args.layer,
+                                                                  args.facet, args.bin, args.thresh, args.model_type,
+                                                                  args.stride, args.votes_percentage, args.sample_interval,
+                                                                  args.low_res_saliency_maps, args.num_parts,
+                                                                  args.num_crop_augmentations, args.three_stages,
+                                                                  args.elbow_second_stage, curr_save_dir, args.from_ckpt)
 
-            for image, part_fig in zip(curr_images, part_figs):
-                part_fig.savefig(curr_save_dir / f'{Path(image).stem}_vis.png', bbox_inches='tight', pad_inches=0)
-            plt.close('all')
+                # saving part cosegmentations
+                part_figs = draw_part_cosegmentation(args.num_parts, parts_imgs, pil_images)
+
+                for image, part_fig in zip(chunk, part_figs):
+                    part_fig.savefig(curr_save_dir / f'{Path(image).stem}_vis.png', bbox_inches='tight', pad_inches=0)
+                plt.close('all')
